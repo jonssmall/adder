@@ -27,10 +27,10 @@ const fullAdder = (a, b, carryIn) => {
 //   b: [1,1,1,0,0,1,1,0]
 // };
 
-const machine = (inputs) => {
-  const first = fullAdder(inputs.a[0], inputs.b[0], 0);
-  return inputs.a.slice(1).reduce((acc, e,i,a) => {
-    return [...acc, fullAdder(inputs.a[i+1], inputs.b[i+1], acc[i].carryOut)];
+const machine = (rows) => {
+  const first = fullAdder(rows.a[0], rows.b[0], 0);
+  return rows.a.slice(1).reduce((acc, e,i,a) => {
+    return [...acc, fullAdder(rows.a[i+1], rows.b[i+1], acc[i].carryOut)];
   }, [first]);
 };
 

@@ -22416,6 +22416,10 @@ var _react = __webpack_require__(49);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _adder = __webpack_require__(186);
+
+var _adder2 = _interopRequireDefault(_adder);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -22424,22 +22428,38 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var INIT = [0, 0, 0, 0, 0, 0, 0, 0];
+
 var Machine = function (_React$Component) {
   _inherits(Machine, _React$Component);
 
-  function Machine() {
+  function Machine(props) {
     _classCallCheck(this, Machine);
 
-    return _possibleConstructorReturn(this, (Machine.__proto__ || Object.getPrototypeOf(Machine)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (Machine.__proto__ || Object.getPrototypeOf(Machine)).call(this, props));
+
+    _this.state = {
+      rowA: INIT,
+      rowB: INIT,
+      output: INIT
+    };
+    // this.addPost = this.addPost.bind(this);
+    return _this;
   }
 
   _createClass(Machine, [{
+    key: 'handleClick',
+    value: function handleClick() {}
+  }, {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
         'div',
         null,
-        'Hello'
+        _react2.default.createElement(LightRow, { row: this.state.rowA }),
+        _react2.default.createElement(LightRow, { row: this.state.rowB }),
+        _react2.default.createElement('hr', null),
+        _react2.default.createElement(LightRow, { row: this.state.output })
       );
     }
   }]);
@@ -22447,7 +22467,91 @@ var Machine = function (_React$Component) {
   return Machine;
 }(_react2.default.Component);
 
+function LightRow(props) {
+  var lights = props.row.map(function (r, i) {
+    return _react2.default.createElement('div', { key: i, className: r ? 'light-switch' : 'light-switch on' });
+  });
+  return _react2.default.createElement(
+    'div',
+    null,
+    lights
+  );
+}
+
 exports.default = Machine;
+
+/***/ }),
+/* 186 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+var gates = {
+  AND: function AND() {
+    for (var _len = arguments.length, inputs = Array(_len), _key = 0; _key < _len; _key++) {
+      inputs[_key] = arguments[_key];
+    }
+
+    return inputs.every(function (i) {
+      return i;
+    });
+  },
+  OR: function OR() {
+    for (var _len2 = arguments.length, inputs = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      inputs[_key2] = arguments[_key2];
+    }
+
+    return inputs.some(function (i) {
+      return i;
+    });
+  },
+  NOR: function NOR() {
+    return !this.NOR.apply(this, arguments);
+  },
+  NAND: function NAND() {
+    return !this.AND.apply(this, arguments);
+  },
+  XOR: function XOR() {
+    return this.AND(this.OR.apply(this, arguments), this.NAND.apply(this, arguments));
+  }
+};
+
+var halfAdder = function halfAdder(a, b) {
+  return {
+    sumOut: gates.XOR(a, b),
+    carryOut: gates.AND(a, b)
+  };
+};
+
+var fullAdder = function fullAdder(a, b, carryIn) {
+  var half1 = halfAdder(a, b);
+  var half2 = halfAdder(carryIn, half1.sumOut);
+  return {
+    sumOut: half2.sumOut,
+    carryOut: gates.OR(half1.carryOut, half2.carryOut)
+  };
+};
+
+// const inputs = {
+//   a: [0,1,0,0,1,1,0,0],
+//   b: [1,1,1,0,0,1,1,0]
+// };
+
+var machine = function machine(rows) {
+  var first = fullAdder(rows.a[0], rows.b[0], 0);
+  return rows.a.slice(1).reduce(function (acc, e, i, a) {
+    return [].concat(_toConsumableArray(acc), [fullAdder(rows.a[i + 1], rows.b[i + 1], acc[i].carryOut)]);
+  }, [first]);
+};
+
+exports.default = machine;
 
 /***/ })
 /******/ ]);
