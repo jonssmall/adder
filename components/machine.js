@@ -2,43 +2,58 @@
 import React from 'react';
 import adder from './adder';
 
-const INIT = [0,0,0,0,0,0,0,0];
 class Machine extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      rowA: INIT,
-      rowB: INIT,
-      output: INIT
+      a: [0,0,0,0,0,0,0,0],
+      b: [0,0,0,0,0,0,0,0],
+      output: [0,0,0,0,0,0,0,0]
     };
-    // this.addPost = this.addPost.bind(this);
+    this.toggleLight = this.toggleLight.bind(this);
   };
 
-  handleClick() {
-
+  toggleLight(r,i) {
+    const row = this.state[r];    
+    row[i] = !row[i];
+    this.setState(row);
+    console.log(this.state);
   }
 
+  //todo: overflow indicator
   render() {
     return (
       <div>
-        <LightRow row={this.state.rowA} />
-        <LightRow row={this.state.rowB} />
+        <LightRow row="a" input={this.state.a} clickHandler={this.toggleLight} />
+        <LightRow row="b" input={this.state.b} clickHandler={this.toggleLight} />
         <hr/>
-        <LightRow row={this.state.output} />
+        <LightRow input={this.state.output} />
       </div>
     )
   }
 }
 
 function LightRow(props) {
-  const lights = props.row.map((r, i) => {
-    return <div key={i} className={r ? 'light-switch' : 'light-switch on'}></div>
+  const lights = props.input.map((r, i) => {
+    const attrs = {
+      key: i,
+      className: r ? 'light-switch' : 'light-switch on',
+      onClick: props.clickHandler ? props.clickHandler.bind(this,props.row,i) : null //find a better way for answer row
+    };
+    return <div {...attrs}></div>
   });
   return (
     <div>
       {lights}
     </div>
   )
+}
+
+// TODO: figure out how to use HOC
+function clickRow(WrappedComponent) {
+  return function(props) {
+    <WrappedComponent {...props} onClick={console.log('hi')} />
+  }
 }
 
 export default Machine;

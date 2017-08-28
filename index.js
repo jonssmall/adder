@@ -22410,6 +22410,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__(49);
@@ -22428,8 +22430,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var INIT = [0, 0, 0, 0, 0, 0, 0, 0];
-
 var Machine = function (_React$Component) {
   _inherits(Machine, _React$Component);
 
@@ -22439,27 +22439,35 @@ var Machine = function (_React$Component) {
     var _this = _possibleConstructorReturn(this, (Machine.__proto__ || Object.getPrototypeOf(Machine)).call(this, props));
 
     _this.state = {
-      rowA: INIT,
-      rowB: INIT,
-      output: INIT
+      a: [0, 0, 0, 0, 0, 0, 0, 0],
+      b: [0, 0, 0, 0, 0, 0, 0, 0],
+      output: [0, 0, 0, 0, 0, 0, 0, 0]
     };
-    // this.addPost = this.addPost.bind(this);
+    _this.toggleLight = _this.toggleLight.bind(_this);
     return _this;
   }
 
   _createClass(Machine, [{
-    key: 'handleClick',
-    value: function handleClick() {}
+    key: 'toggleLight',
+    value: function toggleLight(r, i) {
+      var row = this.state[r];
+      row[i] = !row[i];
+      this.setState(row);
+      console.log(this.state);
+    }
+
+    //todo: overflow indicator
+
   }, {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
         'div',
         null,
-        _react2.default.createElement(LightRow, { row: this.state.rowA }),
-        _react2.default.createElement(LightRow, { row: this.state.rowB }),
+        _react2.default.createElement(LightRow, { row: 'a', input: this.state.a, clickHandler: this.toggleLight }),
+        _react2.default.createElement(LightRow, { row: 'b', input: this.state.b, clickHandler: this.toggleLight }),
         _react2.default.createElement('hr', null),
-        _react2.default.createElement(LightRow, { row: this.state.output })
+        _react2.default.createElement(LightRow, { input: this.state.output })
       );
     }
   }]);
@@ -22468,14 +22476,28 @@ var Machine = function (_React$Component) {
 }(_react2.default.Component);
 
 function LightRow(props) {
-  var lights = props.row.map(function (r, i) {
-    return _react2.default.createElement('div', { key: i, className: r ? 'light-switch' : 'light-switch on' });
+  var _this2 = this;
+
+  var lights = props.input.map(function (r, i) {
+    var attrs = {
+      key: i,
+      className: r ? 'light-switch' : 'light-switch on',
+      onClick: props.clickHandler ? props.clickHandler.bind(_this2, props.row, i) : null //find a better way for answer row
+    };
+    return _react2.default.createElement('div', attrs);
   });
   return _react2.default.createElement(
     'div',
     null,
     lights
   );
+}
+
+// TODO: figure out how to use HOC
+function clickRow(WrappedComponent) {
+  return function (props) {
+    _react2.default.createElement(WrappedComponent, _extends({}, props, { onClick: console.log('hi') }));
+  };
 }
 
 exports.default = Machine;
