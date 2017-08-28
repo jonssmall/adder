@@ -22453,7 +22453,11 @@ var Machine = function (_React$Component) {
       var row = this.state[r];
       row[i] = !row[i];
       this.setState(row);
-      console.log(this.state);
+      console.log(this.state.a);
+      var output = (0, _adder2.default)({ a: this.state.a, b: this.state.b }).map(function (o) {
+        return o.sumOut;
+      });
+      this.setState({ output: output });
     }
 
     //todo: overflow indicator
@@ -22489,7 +22493,7 @@ function LightRow(props) {
   return _react2.default.createElement(
     'div',
     null,
-    lights
+    lights.reverse()
   );
 }
 

@@ -17,7 +17,9 @@ class Machine extends React.Component {
     const row = this.state[r];    
     row[i] = !row[i];
     this.setState(row);
-    console.log(this.state);
+    console.log(this.state.a)
+    const output = adder({a: this.state.a, b: this.state.b}).map(o => o.sumOut);        
+    this.setState({output});
   }
 
   //todo: overflow indicator
@@ -44,7 +46,7 @@ function LightRow(props) {
   });
   return (
     <div>
-      {lights}
+      {lights.reverse()}
     </div>
   )
 }
