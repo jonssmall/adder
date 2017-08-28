@@ -8,7 +8,8 @@ class Machine extends React.Component {
     this.state = {
       a: [0,0,0,0,0,0,0,0],
       b: [0,0,0,0,0,0,0,0],
-      output: [0,0,0,0,0,0,0,0]
+      output: [0,0,0,0,0,0,0,0],
+      overflow: false
     };
     this.toggleLight = this.toggleLight.bind(this);
   };
@@ -16,21 +17,21 @@ class Machine extends React.Component {
   toggleLight(r,i) {
     const row = this.state[r];    
     row[i] = !row[i];
-    this.setState(row);
-    console.log(this.state.a)
-    const output = adder({a: this.state.a, b: this.state.b}).map(o => o.sumOut);        
-    this.setState({output});
+    this.setState(row);    
+    const machineOutput = adder({a: this.state.a, b: this.state.b});        
+    this.setState({output: machineOutput.map(o => o.sumOut), overflow: machineOutput[7].carryOut});    
   }
-
-  //todo: overflow indicator
-  render() {
+  
+  render() {    
     return (
       <div>
         <LightRow row="a" input={this.state.a} clickHandler={this.toggleLight} />
         <LightRow row="b" input={this.state.b} clickHandler={this.toggleLight} />
         <hr/>
         <LightRow input={this.state.output} />
-      </div>
+        Overflow: <br/> 
+        <Overflow on={this.state.overflow}/>
+      </div>      
     )
   }
 }
@@ -49,6 +50,10 @@ function LightRow(props) {
       {lights.reverse()}
     </div>
   )
+}
+
+function Overflow(props) {
+  return <div className={props.on ? 'light-switch' : 'light-switch on'} ></div>
 }
 
 // TODO: figure out how to use HOC

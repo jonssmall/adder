@@ -22441,7 +22441,8 @@ var Machine = function (_React$Component) {
     _this.state = {
       a: [0, 0, 0, 0, 0, 0, 0, 0],
       b: [0, 0, 0, 0, 0, 0, 0, 0],
-      output: [0, 0, 0, 0, 0, 0, 0, 0]
+      output: [0, 0, 0, 0, 0, 0, 0, 0],
+      overflow: false
     };
     _this.toggleLight = _this.toggleLight.bind(_this);
     return _this;
@@ -22453,15 +22454,11 @@ var Machine = function (_React$Component) {
       var row = this.state[r];
       row[i] = !row[i];
       this.setState(row);
-      console.log(this.state.a);
-      var output = (0, _adder2.default)({ a: this.state.a, b: this.state.b }).map(function (o) {
-        return o.sumOut;
-      });
-      this.setState({ output: output });
+      var machineOutput = (0, _adder2.default)({ a: this.state.a, b: this.state.b });
+      this.setState({ output: machineOutput.map(function (o) {
+          return o.sumOut;
+        }), overflow: machineOutput[7].carryOut });
     }
-
-    //todo: overflow indicator
-
   }, {
     key: 'render',
     value: function render() {
@@ -22471,7 +22468,10 @@ var Machine = function (_React$Component) {
         _react2.default.createElement(LightRow, { row: 'a', input: this.state.a, clickHandler: this.toggleLight }),
         _react2.default.createElement(LightRow, { row: 'b', input: this.state.b, clickHandler: this.toggleLight }),
         _react2.default.createElement('hr', null),
-        _react2.default.createElement(LightRow, { input: this.state.output })
+        _react2.default.createElement(LightRow, { input: this.state.output }),
+        'Overflow: ',
+        _react2.default.createElement('br', null),
+        _react2.default.createElement(Overflow, { on: this.state.overflow })
       );
     }
   }]);
@@ -22495,6 +22495,10 @@ function LightRow(props) {
     null,
     lights.reverse()
   );
+}
+
+function Overflow(props) {
+  return _react2.default.createElement('div', { className: props.on ? 'light-switch' : 'light-switch on' });
 }
 
 // TODO: figure out how to use HOC
